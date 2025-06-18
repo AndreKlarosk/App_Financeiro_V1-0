@@ -1,0 +1,877 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceManager Pro</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <h1>FinanceManager Pro</h1>
+                </div>
+                <div class="header-controls">
+                    <button class="btn btn-primary" id="addTransactionBtn">
+                        <i class="fas fa-plus"></i> Nova Transação
+                    </button>
+                    <button class="btn btn-secondary" id="exportBtn">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li><a href="#" data-section="dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a></li>
+                <li><a href="#" data-section="transactions" class="nav-link">
+                    <i class="fas fa-exchange-alt"></i> Transações
+                </a></li>
+                <li><a href="#" data-section="categories" class="nav-link">
+                    <i class="fas fa-tags"></i> Categorias
+                </a></li>
+                <li><a href="#" data-section="budget" class="nav-link">
+                    <i class="fas fa-piggy-bank"></i> Orçamento
+                </a></li>
+                <li><a href="#" data-section="goals" class="nav-link">
+                    <i class="fas fa-bullseye"></i> Metas
+                </a></li>
+                <li><a href="#" data-section="reports" class="nav-link">
+                    <i class="fas fa-chart-bar"></i> Relatórios
+                </a></li>
+                
+                <li><a href="#" data-section="planning" class="nav-link">
+                    <i class="fas fa-calculator"></i> Planejamento
+                </a></li>
+                <li><a href="#" data-section="investments" class="nav-link">
+                    <i class="fas fa-coins"></i> Investimentos
+                </a></li>
+                <li><a href="#" data-section="notifications" class="nav-link">
+                    <i class="fas fa-bell"></i> Notificações
+                </a></li>
+                <li><a href="#" data-section="comparison" class="nav-link">
+                    <i class="fas fa-balance-scale-right"></i> Comparações
+                </a></li>
+                <li><a href="#" data-section="settings" class="nav-link">
+                    <i class="fas fa-cog"></i> Configurações
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="dashboard-header">
+                    <h2>Dashboard Financeiro</h2>
+                    <div class="date-filter">
+                        <select id="periodFilter">
+                            <option value="7">Últimos 7 dias</option>
+                            <option value="30" selected>Últimos 30 dias</option>
+                            <option value="90">Últimos 3 meses</option>
+                            <option value="365">Último ano</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card card-income">
+                        <div class="card-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Receitas</h3>
+                            <p class="amount" id="totalIncome">R$ 0,00</p>
+                            <span class="change positive" id="incomeChange">+0%</span>
+                        </div>
+                    </div>
+                    <div class="card card-expense">
+                        <div class="card-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Despesas</h3>
+                            <p class="amount" id="totalExpense">R$ 0,00</p>
+                            <span class="change negative" id="expenseChange">+0%</span>
+                        </div>
+                    </div>
+                    <div class="card card-balance">
+                        <div class="card-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Saldo</h3>
+                            <p class="amount" id="totalBalance">R$ 0,00</p>
+                            <span class="change" id="balanceChange">0%</span>
+                        </div>
+                    </div>
+                    <div class="card card-budget">
+                        <div class="card-icon">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Orçamento Restante</h3>
+                            <p class="amount" id="budgetRemaining">R$ 0,00</p>
+                            <span class="change" id="budgetProgress">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Evolução Mensal</h3>
+                        <canvas id="lineChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Despesas por Categoria</h3>
+                        <canvas id="pieChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="recent-transactions">
+                    <h3>Transações Recentes</h3>
+                    <div class="transactions-list" id="recentTransactionsList">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transactions Section -->
+            <section id="transactions" class="content-section">
+                <div class="section-header">
+                    <h2>Gerenciar Transações</h2>
+                    <div class="filters">
+                        <input type="text" id="searchTransactions" placeholder="Buscar transações...">
+                        <select id="categoryFilter">
+                            <option value="">Todas as categorias</option>
+                        </select>
+                        <select id="typeFilter">
+                            <option value="">Todos os tipos</option>
+                            <option value="income">Receita</option>
+                            <option value="expense">Despesa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="transactions-table" id="transactionsTable">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section id="categories" class="content-section">
+                <div class="section-header">
+                    <h2>Gerenciar Categorias</h2>
+                    <button class="btn btn-primary" id="addCategoryBtn">
+                        <i class="fas fa-plus"></i> Nova Categoria
+                    </button>
+                </div>
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Budget Section -->
+            <section id="budget" class="content-section">
+                <div class="section-header">
+                    <h2>Orçamento Mensal</h2>
+                    <button class="btn btn-primary" id="addBudgetBtn">
+                        <i class="fas fa-plus"></i> Novo Orçamento
+                    </button>
+                </div>
+                <div class="budget-overview" id="budgetOverview">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Goals Section -->
+            <section id="goals" class="content-section">
+                <div class="section-header">
+                    <h2>Metas Financeiras</h2>
+                    <button class="btn btn-primary" id="addGoalBtn">
+                        <i class="fas fa-plus"></i> Nova Meta
+                    </button>
+                </div>
+                <div class="goals-grid" id="goalsGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2>Relatórios</h2>
+                    <div class="report-controls">
+                        <input type="month" id="reportMonth" value="">
+                        <button class="btn btn-primary" id="generateReportBtn">
+                            <i class="fas fa-chart-line"></i> Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+                <div class="reports-container" id="reportsContainer">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            
+
+            <!-- Planning Section -->
+            <section id="planning" class="content-section">
+                <div class="section-header">
+                    <h2>Planejamento Financeiro</h2>
+                </div>
+                <div class="planning-tools">
+                    <div class="tool-card">
+                        <h3>Simulador de Economia</h3>
+                        <div class="calculator">
+                            <div class="calc-row">
+                                <label>Valor mensal:</label>
+                                <input type="number" id="savingsAmount" placeholder="1000">
+                            </div>
+                            <div class="calc-row">
+                                <label>Taxa de juros (% a.m.):</label>
+                                <input type="number" id="interestRate" placeholder="0.5" step="0.1">
+                            </div>
+                            <div class="calc-row">
+                                <label>Período (meses):</label>
+                                <input type="number" id="savingsPeriod" placeholder="24">
+                            </div>
+                            <button class="btn btn-primary" id="calculateSavings">Calcular</button>
+                            <div class="calc-result" id="savingsResult"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Simulador de Financiamento</h3>
+                        <div class="calculator">
+                            <div class="calc-row">
+                                <label>Valor do financiamento:</label>
+                                <input type="number" id="loanAmount" placeholder="100000">
+                            </div>
+                            <div class="calc-row">
+                                <label>Taxa de juros (% a.m.):</label>
+                                <input type="number" id="loanRate" placeholder="1.2" step="0.1">
+                            </div>
+                            <div class="calc-row">
+                                <label>Período (meses):</label>
+                                <input type="number" id="loanPeriod" placeholder="60">
+                            </div>
+                            <button class="btn btn-primary" id="calculateLoan">Calcular Parcela</button>
+                            <div class="calc-result" id="loanResult"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Planejador de Aposentadoria</h3>
+                        <div class="calculator">
+                            <div class="calc-row">
+                                <label>Idade atual:</label>
+                                <input type="number" id="currentAge" placeholder="30">
+                            </div>
+                            <div class="calc-row">
+                                <label>Idade de aposentadoria:</label>
+                                <input type="number" id="retirementAge" placeholder="65">
+                            </div>
+                            <div class="calc-row">
+                                <label>Valor mensal desejado:</label>
+                                <input type="number" id="monthlyRetirement" placeholder="5000">
+                            </div>
+                            <button class="btn btn-primary" id="calculateRetirement">Calcular</button>
+                            <div class="calc-result" id="retirementResult"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Simulador de Inflação</h3>
+                        <div class="calculator">
+                            <div class="calc-row">
+                                <label>Valor atual:</label>
+                                <input type="number" id="inflationValue" placeholder="1000">
+                            </div>
+                            <div class="calc-row">
+                                <label>Taxa de inflação (% a.a.):</label>
+                                <input type="number" id="inflationRate" placeholder="6" step="0.1">
+                            </div>
+                            <div class="calc-row">
+                                <label>Período (anos):</label>
+                                <input type="number" id="inflationPeriod" placeholder="10">
+                            </div>
+                            <button class="btn btn-primary" id="calculateInflation">Calcular</button>
+                            <div class="calc-result" id="inflationResult"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Calculadora de Juros Compostos</h3>
+                        <div class="calculator">
+                            <div class="calc-row">
+                                <label>Capital inicial:</label>
+                                <input type="number" id="compoundInitial" placeholder="10000">
+                            </div>
+                            <div class="calc-row">
+                                <label>Aporte mensal:</label>
+                                <input type="number" id="compoundMonthly" placeholder="500">
+                            </div>
+                            <div class="calc-row">
+                                <label>Taxa de juros (% a.a.):</label>
+                                <input type="number" id="compoundRate" placeholder="12" step="0.1">
+                            </div>
+                            <div class="calc-row">
+                                <label>Período (anos):</label>
+                                <input type="number" id="compoundPeriod" placeholder="5">
+                            </div>
+                            <button class="btn btn-primary" id="calculateCompound">Calcular</button>
+                            <div class="calc-result" id="compoundResult"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Calculadora de Desconto</h3>
+                        <div class="calculator">
+                            <div class="calc-row">
+                                <label>Valor original:</label>
+                                <input type="number" id="discountOriginal" placeholder="100">
+                            </div>
+                            <div class="calc-row">
+                                <label>Desconto (%):</label>
+                                <input type="number" id="discountPercent" placeholder="20" step="0.1">
+                            </div>
+                            <div class="calc-row">
+                                <label>Desconto (valor):</label>
+                                <input type="number" id="discountValue" placeholder="">
+                            </div>
+                            <button class="btn btn-primary" id="calculateDiscount">Calcular</button>
+                            <div class="calc-result" id="discountResult"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Investments Section -->
+            <section id="investments" class="content-section">
+                <div class="section-header">
+                    <h2>Carteira de Investimentos</h2>
+                    <button class="btn btn-primary" id="addInvestmentBtn">
+                        <i class="fas fa-plus"></i> Novo Investimento
+                    </button>
+                </div>
+                <div class="investments-overview">
+                    <div class="investment-summary">
+                        <div class="summary-item">
+                            <h4>Total Investido</h4>
+                            <div class="value" id="totalInvested">R$ 0,00</div>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Valor Atual</h4>
+                            <div class="value" id="currentValue">R$ 0,00</div>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Rentabilidade</h4>
+                            <div class="value" id="totalReturn">R$ 0,00</div>
+                        </div>
+                        <div class="summary-item">
+                            <h4>% de Rendimento</h4>
+                            <div class="value" id="returnPercentage">0%</div>
+                        </div>
+                    </div>
+                    <div class="investments-chart">
+                        <canvas id="investmentChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="investments-list" id="investmentsList">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <!-- Notifications Section -->
+            <section id="notifications" class="content-section">
+                <div class="section-header">
+                    <h2>Central de Notificações</h2>
+                    <button class="btn btn-primary" id="addReminderBtn">
+                        <i class="fas fa-plus"></i> Novo Lembrete
+                    </button>
+                </div>
+                <div class="notifications-container">
+                    <div class="alerts-section">
+                        <h3>Alertas Automáticos</h3>
+                        <div class="alerts-list" id="alertsList">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    <div class="reminders-section">
+                        <h3>Lembretes</h3>
+                        <div class="reminders-list" id="remindersList">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison Section -->
+            <section id="comparison" class="content-section">
+                <div class="section-header">
+                    <h2>Comparação de Produtos Financeiros</h2>
+                </div>
+                <div class="comparison-tools">
+                    <div class="tool-card">
+                        <h3>Comparador de Cartões de Crédito</h3>
+                        <div class="comparison-form">
+                            <div class="comparison-item">
+                                <h4>Cartão 1</h4>
+                                <input type="text" id="card1Name" placeholder="Nome do cartão">
+                                <input type="number" id="card1Annual" placeholder="Anuidade" step="0.01">
+                                <input type="number" id="card1Cashback" placeholder="Cashback (%)" step="0.1">
+                                <input type="number" id="card1Points" placeholder="Pontos por R$1" step="0.1">
+                            </div>
+                            <div class="comparison-item">
+                                <h4>Cartão 2</h4>
+                                <input type="text" id="card2Name" placeholder="Nome do cartão">
+                                <input type="number" id="card2Annual" placeholder="Anuidade" step="0.01">
+                                <input type="number" id="card2Cashback" placeholder="Cashback (%)" step="0.1">
+                                <input type="number" id="card2Points" placeholder="Pontos por R$1" step="0.1">
+                            </div>
+                            <button class="btn btn-primary" id="compareCards">Comparar</button>
+                            <div class="comparison-result" id="cardComparison"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Comparador de Investimentos</h3>
+                        <div class="comparison-form">
+                            <div class="comparison-item">
+                                <h4>Investimento 1</h4>
+                                <input type="text" id="invest1Name" placeholder="Nome do investimento">
+                                <input type="number" id="invest1Return" placeholder="Rendimento anual (%)" step="0.1">
+                                <input type="number" id="invest1Risk" placeholder="Risco (1-10)" min="1" max="10">
+                                <input type="number" id="invest1Liquidity" placeholder="Liquidez (dias)" min="0">
+                            </div>
+                            <div class="comparison-item">
+                                <h4>Investimento 2</h4>
+                                <input type="text" id="invest2Name" placeholder="Nome do investimento">
+                                <input type="number" id="invest2Return" placeholder="Rendimento anual (%)" step="0.1">
+                                <input type="number" id="invest2Risk" placeholder="Risco (1-10)" min="1" max="10">
+                                <input type="number" id="invest2Liquidity" placeholder="Liquidez (dias)" min="0">
+                            </div>
+                            <div class="comparison-params">
+                                <input type="number" id="investAmount" placeholder="Valor a investir" step="0.01">
+                                <input type="number" id="investPeriod" placeholder="Período (anos)" min="1">
+                            </div>
+                            <button class="btn btn-primary" id="compareInvestments">Comparar</button>
+                            <div class="comparison-result" id="investmentComparison"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <h3>Comparador de Empréstimos</h3>
+                        <div class="comparison-form">
+                            <div class="comparison-item">
+                                <h4>Empréstimo 1</h4>
+                                <input type="text" id="loan1Name" placeholder="Instituição">
+                                <input type="number" id="loan1Rate" placeholder="Taxa mensal (%)" step="0.01">
+                                <input type="number" id="loan1Fee" placeholder="Taxa de abertura" step="0.01">
+                                <input type="number" id="loan1Insurance" placeholder="Seguro mensal" step="0.01">
+                            </div>
+                            <div class="comparison-item">
+                                <h4>Empréstimo 2</h4>
+                                <input type="text" id="loan2Name" placeholder="Instituição">
+                                <input type="number" id="loan2Rate" placeholder="Taxa mensal (%)" step="0.01">
+                                <input type="number" id="loan2Fee" placeholder="Taxa de abertura" step="0.01">
+                                <input type="number" id="loan2Insurance" placeholder="Seguro mensal" step="0.01">
+                            </div>
+                            <div class="comparison-params">
+                                <input type="number" id="loanAmount" placeholder="Valor do empréstimo" step="0.01">
+                                <input type="number" id="loanTerm" placeholder="Prazo (meses)" min="1">
+                            </div>
+                            <button class="btn btn-primary" id="compareLoans">Comparar</button>
+                            <div class="comparison-result" id="loanComparison"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h2>Configurações</h2>
+                </div>
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>Aparência</h3>
+                        <div class="setting-item">
+                            <label for="darkModeToggle">Modo Escuro</label>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="currencySelect">Moeda</label>
+                            <select id="currencySelect">
+                                <option value="BRL">Real (R$)</option>
+                                <option value="USD">Dólar ($)</option>
+                                <option value="EUR">Euro (€)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Notificações</h3>
+                        <div class="setting-item">
+                            <label for="budgetAlertsToggle">Alertas de Orçamento</label>
+                            <label class="switch">
+                                <input type="checkbox" id="budgetAlertsToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="goalAlertsToggle">Alertas de Metas</label>
+                            <label class="switch">
+                                <input type="checkbox" id="goalAlertsToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="backupFrequency">Backup Automático</label>
+                            <select id="backupFrequency">
+                                <option value="daily">Diário</option>
+                                <option value="weekly" selected>Semanal</option>
+                                <option value="monthly">Mensal</option>
+                                <option value="never">Nunca</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Módulos</h3>
+                        <div class="setting-item">
+                            <label for="enableTransactions">Transações</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableTransactions" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableCategories">Categorias</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableCategories" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableBudget">Orçamento</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableBudget" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableGoals">Metas</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableGoals" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableReports">Relatórios</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableReports" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enablePlanning">Planejamento</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enablePlanning" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableInvestments">Investimentos</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableInvestments" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableNotifications">Notificações</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label for="enableComparison">Comparações</label>
+                            <label class="switch">
+                                <input type="checkbox" id="enableComparison" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Dados</h3>
+                        <button class="btn btn-warning" id="exportDataBtn">
+                            <i class="fas fa-download"></i> Exportar Dados
+                        </button>
+                        <button class="btn btn-info" id="importDataBtn">
+                            <i class="fas fa-upload"></i> Importar Dados
+                        </button>
+                        <button class="btn btn-success" id="backupNowBtn">
+                            <i class="fas fa-cloud-upload-alt"></i> Backup Agora
+                        </button>
+                        <button class="btn btn-danger" id="clearDataBtn">
+                            <i class="fas fa-trash"></i> Limpar Todos os Dados
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="transactionModalTitle">Nova Transação</h3>
+                <span class="close" data-modal="transactionModal">&times;</span>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="transactionType">Tipo</label>
+                    <select id="transactionType" required>
+                        <option value="expense">Despesa</option>
+                        <option value="income">Receita</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionAmount">Valor</label>
+                    <input type="number" id="transactionAmount" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="transactionDescription">Descrição</label>
+                    <input type="text" id="transactionDescription" required>
+                </div>
+                <div class="form-group">
+                    <label for="transactionCategory">Categoria</label>
+                    <select id="transactionCategory" required>
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionDate">Data</label>
+                    <input type="date" id="transactionDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="transactionTags">Tags (opcional)</label>
+                    <input type="text" id="transactionTags" placeholder="Separe com vírgulas: trabalho, emergência">
+                </div>
+                <div class="form-group">
+                    <label for="transactionNotes">Observações</label>
+                    <textarea id="transactionNotes" rows="2" placeholder="Notas adicionais..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="transactionModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Nova Categoria</h3>
+                <span class="close" data-modal="categoryModal">&times;</span>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Nome</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoryIcon">Ícone</label>
+                    <select id="categoryIcon" required>
+                        <option value="fas fa-shopping-cart">Compras</option>
+                        <option value="fas fa-home">Casa</option>
+                        <option value="fas fa-car">Transporte</option>
+                        <option value="fas fa-utensils">Alimentação</option>
+                        <option value="fas fa-heartbeat">Saúde</option>
+                        <option value="fas fa-graduation-cap">Educação</option>
+                        <option value="fas fa-gamepad">Entretenimento</option>
+                        <option value="fas fa-briefcase">Trabalho</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="categoryColor">Cor</label>
+                    <input type="color" id="categoryColor" value="#3498db" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="categoryModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="budgetModalTitle">Novo Orçamento</h3>
+                <span class="close" data-modal="budgetModal">&times;</span>
+            </div>
+            <form id="budgetForm">
+                <div class="form-group">
+                    <label for="budgetCategory">Categoria</label>
+                    <select id="budgetCategory" required>
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budgetAmount">Valor Limite</label>
+                    <input type="number" id="budgetAmount" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="budgetMonth">Mês</label>
+                    <input type="month" id="budgetMonth" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="budgetModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Goal Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="goalModalTitle">Nova Meta</h3>
+                <span class="close" data-modal="goalModal">&times;</span>
+            </div>
+            <form id="goalForm">
+                <div class="form-group">
+                    <label for="goalName">Nome da Meta</label>
+                    <input type="text" id="goalName" required>
+                </div>
+                <div class="form-group">
+                    <label for="goalTarget">Valor Alvo</label>
+                    <input type="number" id="goalTarget" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="goalCurrent">Valor Atual</label>
+                    <input type="number" id="goalCurrent" step="0.01" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="goalDeadline">Data Limite</label>
+                    <input type="date" id="goalDeadline" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="goalModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Investment Modal -->
+    <div id="investmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="investmentModalTitle">Novo Investimento</h3>
+                <span class="close" data-modal="investmentModal">&times;</span>
+            </div>
+            <form id="investmentForm">
+                <div class="form-group">
+                    <label for="investmentName">Nome do Investimento</label>
+                    <input type="text" id="investmentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="investmentType">Tipo</label>
+                    <select id="investmentType" required>
+                        <option value="stocks">Ações</option>
+                        <option value="funds">Fundos</option>
+                        <option value="crypto">Criptomoedas</option>
+                        <option value="bonds">Títulos</option>
+                        <option value="savings">Poupança</option>
+                        <option value="other">Outros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="investmentAmount">Valor Investido</label>
+                    <input type="number" id="investmentAmount" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="investmentCurrent">Valor Atual</label>
+                    <input type="number" id="investmentCurrent" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="investmentDate">Data do Investimento</label>
+                    <input type="date" id="investmentDate" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="investmentModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div id="reminderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="reminderModalTitle">Novo Lembrete</h3>
+                <span class="close" data-modal="reminderModal">&times;</span>
+            </div>
+            <form id="reminderForm">
+                <div class="form-group">
+                    <label for="reminderTitle">Título</label>
+                    <input type="text" id="reminderTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="reminderDescription">Descrição</label>
+                    <textarea id="reminderDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reminderDate">Data</label>
+                    <input type="date" id="reminderDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="reminderType">Tipo</label>
+                    <select id="reminderType" required>
+                        <option value="payment">Pagamento</option>
+                        <option value="income">Recebimento</option>
+                        <option value="investment">Investimento</option>
+                        <option value="review">Revisão</option>
+                        <option value="other">Outro</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal="reminderModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
