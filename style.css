@@ -1042,21 +1042,9 @@ input:checked + .slider:before {
     }
 
     .mobile-menu-toggle {
-        display: block !important;
+        display: block;
         order: -1;
         z-index: 1001;
-        background: none;
-        border: none;
-        color: var(--text-primary);
-        font-size: 1.25rem;
-        padding: 0.5rem;
-        cursor: pointer;
-        border-radius: var(--radius);
-        transition: var(--transition);
-    }
-
-    .mobile-menu-toggle:hover {
-        background: var(--bg-secondary);
     }
 
     .header-controls {
@@ -1073,7 +1061,6 @@ input:checked + .slider:before {
         width: 280px;
         left: 0;
         z-index: 1000;
-        transition: transform 0.3s ease;
     }
 
     .sidebar.mobile-open {
